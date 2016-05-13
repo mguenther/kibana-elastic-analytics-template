@@ -11,7 +11,7 @@ public class Feeder extends AbstractBaseFeeder<TimeSeriesItem> {
 
     @Override
     public void run() {
-        withFeeder(search -> {
+        withAdapter(search -> {
             search.index(generateDocuments());
         });
     }

@@ -1,4 +1,4 @@
-package com.mgu.analytics.adapter.search.elastic;
+package com.mgu.analytics.adapter.search;
 
 public class ElasticIndexConfig {
 

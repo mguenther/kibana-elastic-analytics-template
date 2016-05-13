@@ -1,4 +1,4 @@
-package com.mgu.analytics.adapter.search.elastic;
+package com.mgu.analytics.adapter.search;
 
 import com.mgu.analytics.util.CacheKey;
 

@@ -1,4 +1,4 @@
-package com.mgu.analytics.adapter.search.elastic;
+package com.mgu.analytics.adapter.search;
 
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.LoadingCache;

@@ -1,9 +1,7 @@
-package com.mgu.analytics.adapter.search.elastic;
+package com.mgu.analytics.adapter.search;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mgu.analytics.adapter.search.Index;
-import com.mgu.analytics.adapter.search.TypedDocument;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.elasticsearch.client.Client;
@@ -15,7 +13,7 @@ import javax.inject.Inject;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-public class ElasticAdapter<T extends TypedDocument> implements Index<T> {
+public class ElasticAdapter<T extends TypedDocument> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ElasticAdapter.class);
 
@@ -32,7 +30,6 @@ public class ElasticAdapter<T extends TypedDocument> implements Index<T> {
         this.mapper = new ObjectMapper();
     }
 
-    @Override
     public boolean index(final T document) {
         final ClientCacheKey cacheKey = ClientCacheKey.of(config.getIndexName());
         boolean result = true;
@@ -46,7 +43,6 @@ public class ElasticAdapter<T extends TypedDocument> implements Index<T> {
         return result;
     }
 
-    @Override
     public boolean index(final List<T> documents) {
         final ClientCacheKey cacheKey = ClientCacheKey.of(config.getIndexName());
         boolean result = true;
@@ -73,12 +69,10 @@ public class ElasticAdapter<T extends TypedDocument> implements Index<T> {
         return indexBuilder;
     }
 
-    @Override
     public CompletableFuture<Boolean> indexAsync(final T document) {
         return CompletableFuture.supplyAsync(() -> index(document));
     }
 
-    @Override
     public CompletableFuture<Boolean> indexAsync(final List<T> documents) {
         return CompletableFuture.supplyAsync(() -> index(documents));
     }

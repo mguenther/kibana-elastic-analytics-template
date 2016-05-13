@@ -1,0 +1,9 @@
+#!/bin/bash
+
+##########################################################################
+##
+## Sets all string-typed fields to non-analyzed via dynamic templates.
+##
+##########################################################################
+
+curl -XPUT http://localhost:9200/epub-inventory -d @set-strings-to-non-analyzed.json

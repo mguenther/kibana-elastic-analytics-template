@@ -1,10 +1,9 @@
 package com.mgu.analytics.feeder;
 
-import com.mgu.analytics.adapter.search.Index;
 import com.mgu.analytics.adapter.search.TypedDocument;
-import com.mgu.analytics.adapter.search.elastic.ClientCachingFactory;
-import com.mgu.analytics.adapter.search.elastic.ElasticAdapter;
-import com.mgu.analytics.adapter.search.elastic.ElasticIndexConfig;
+import com.mgu.analytics.adapter.search.ClientCachingFactory;
+import com.mgu.analytics.adapter.search.ElasticAdapter;
+import com.mgu.analytics.adapter.search.ElasticIndexConfig;
 import com.mgu.analytics.util.ThrowingConsumer;
 
 import java.util.concurrent.CountDownLatch;
@@ -17,7 +16,7 @@ abstract public class AbstractBaseFeeder<T extends TypedDocument> {
         config = new FeederConfig("config.properties");
     }
 
-    protected void withFeeder(final ThrowingConsumer<Index<T>> acceptor) {
+    protected void withAdapter(final ThrowingConsumer<ElasticAdapter<T>> acceptor) {
         final ElasticIndexConfig indexConfig = new ElasticIndexConfig(config.getIndexName());
         final ElasticAdapter<T> adapter = new ElasticAdapter<>(new ClientCachingFactory(), indexConfig);
         executeAsynchronously(acceptor, adapter);

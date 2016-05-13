@@ -1,5 +1,7 @@
 # Scaffolding project for Kibana-based analytics
 
+[![Build Status](https://travis-ci.org/mguenther/kibana-elastic-analytics-template.svg?branch=master)](https://travis-ci.org/mguenther/kibana-elastic-analytics-template.svg)
+
 This template project provides the means to setup a locally running Elasticsearch-backed Kibana instance with zero configuration using Docker containers. The project also provides a minimalistic implementation of an indexer that is able to push data per-item or in-bulk into Elasticsearch (supports both synchronous and asynchronous programming models).
 
 ## Prerequisites

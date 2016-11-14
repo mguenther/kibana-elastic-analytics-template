@@ -6,4 +6,4 @@
 ##
 ##########################################################################
 
-curl -XPUT http://localhost:9200/epub-inventory -d @set-strings-to-non-analyzed.json
+curl -XPUT http://localhost:9200/demo-index -d @set-strings-to-non-analyzed.json

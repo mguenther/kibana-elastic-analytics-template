@@ -2,6 +2,7 @@ package com.mgu.analytics.adapter.search;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mgu.analytics.util.StopWatch;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.elasticsearch.client.Client;
@@ -10,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -28,35 +30,47 @@ public class ElasticAdapter<T extends TypedDocument> {
         this.factory = factory;
         this.config = config;
         this.mapper = new ObjectMapper();
+        LOGGER.info("Adapter is configured to use index '{}'.", config.getIndexName());
+    }
+
+    private void createIndexIfNonExisting() {
+        final ClientCacheKey cacheKey = ClientCacheKey.of(config.getIndexName());
+        final Client client = factory.get(cacheKey);
+        if (!indexExists()) {
+            LOGGER.info("The index '{}' does not exist. Creating it.");
+            client.admin().indices().prepareCreate(config.getIndexName()).get();
+            LOGGER.info("Index '{}' created.");
+        }
+    }
+
+    private boolean indexExists() {
+        final ClientCacheKey cacheKey = ClientCacheKey.of(config.getIndexName());
+        final Client client = factory.get(cacheKey);
+        return client.admin().indices().prepareExists(config.getIndexName()).get().isExists();
     }
 
     public boolean index(final T document) {
-        final ClientCacheKey cacheKey = ClientCacheKey.of(config.getIndexName());
-        boolean result = true;
-        try {
-            final Client client = factory.get(cacheKey);
-            toIndexRequestBuilder(client, document).execute();
-            LOGGER.info("Successfully indexed document with ID {}.", document.getId());
-        } catch (Throwable t) {
-            result = false;
-        }
-        return result;
+        return index(Collections.singletonList(document));
     }
 
     public boolean index(final List<T> documents) {
+        final StopWatch stopWatch = StopWatch.start();
         final ClientCacheKey cacheKey = ClientCacheKey.of(config.getIndexName());
+        final Client client = factory.get(cacheKey);
         boolean result = true;
         try {
-            final Client client = factory.get(cacheKey);
+            createIndexIfNonExisting();
             final BulkRequestBuilder builder = client.prepareBulk();
             for (T document : documents) {
                 builder.add(toIndexRequestBuilder(client, document));
             }
-            builder.execute();
+            builder.execute().get();
             LOGGER.info("Successfully indexed batch of {} documents.", documents.size());
         } catch (Throwable t) {
+            LOGGER.warn("Caught an unexpected exception while indexing documents.", t);
             result = false;
         }
+        LOGGER.debug("Indexing {} documents took {} ms.", documents.size(), stopWatch.time().toMillis());
         return result;
     }
 
